@@ -1,5 +1,7 @@
 package io.roger.dat159.blockchain;
 
+import io.roger.dat159.blockchain.util.*;
+
 /**
  * Contains both the full Blockchain and the full UtxoMap. Also contains the
  * wallet for the mining rewards + fees.
@@ -21,36 +23,84 @@ public class FullNode {
 	 * block.
 	 */
 	public FullNode(String walletId) {
-		// TODO
+		this.wallet = new Wallet(walletId, this);
+		this.blockchain = new Blockchain();
+		this.utxoMap = new UtxoMap();
+
+		mineAndAddGenesisBlock();
 	}
 
 	/**
 	 * Does what it says.
 	 */
 	public void mineAndAddGenesisBlock() {
-		// TODO
+
 		// 1. Create the coinbase transaction
-		// 2. Add the coinbase transaction to a new block and mine the block
-		// 3. Validate the block. If valid:
-		// 4. Add the block to the blockchain
-		// 5. Update the utxo set
-		// else
-		// up to you
+		CoinbaseTx coinbaseTx = new CoinbaseTx(0, DateTimeUtil.getTimestamp() + " - Transaction", wallet.getAddress());
+
+		if (coinbaseTx.isValid()) {
+
+			// 2. Add the coinbase transaction to a new block and mine the block
+			Block genesisBlock = new Block("0", coinbaseTx, null);
+			genesisBlock.mine();
+
+			// 3. Validate the block. If valid:
+			if (genesisBlock.isValidAsGenesisBlock()) {
+
+				// 4. Add the block to the blockchain
+				blockchain.setGenesisBlock(genesisBlock);
+
+				// 5. Update the utxo set
+				utxoMap.addOutput(new Input(coinbaseTx.getTxId(), 0), coinbaseTx.getOutput());
+			} else {
+				System.out.println("Block invalid as genesis block");
+			}
+
+		} else {
+			System.out.println("TX is invalid");
+		}
 	}
 
 	/**
 	 * Does what it says.
 	 */
 	public void mineAndAppendBlockContaining(Transaction tx) {
-		// TODO
+
 		// 1. Create the coinbase transaction
-		// 2. Add the two transactions to a new block and mine the block
-		// 3. Validate the block. If valid:
-		// 4. Add the block to the blockchain
-		// 5. Update the utxo set with the new coinbaseTx
-		// 6. Update the utxo set with the new tx
-		// else
-		// up to you
+		CoinbaseTx coinbaseTx = new CoinbaseTx(blockchain.getHeight(),
+				DateTimeUtil.getTimestamp() + " by " + wallet.getId(), wallet.getAddress());
+
+		if (coinbaseTx.isValid()) {
+
+			// 2. Add the two transactions to a new block and mine the block
+			Block newBlock = new Block(blockchain.getLastBlockHash(), coinbaseTx, tx);
+
+			// 3. Validate the block. If valid:
+			newBlock.mine();
+
+			if (newBlock.isValid()) {
+
+				// 4. Add the block to the blockchain
+				blockchain.appendBlock(newBlock);
+
+				// 5. Update the utxo set with the new coinbaseTx
+				utxoMap.addOutput(new Input(coinbaseTx.getTxId(), 0), coinbaseTx.getOutput());
+
+				// 6. Update the utxo set with the new tx
+				for (Input i : tx.getInputs()) {
+					utxoMap.removeOutput(i);
+				}
+
+				for (int i = 0; i < tx.getOutputs().size(); i++) {
+					utxoMap.addOutput(new Input(tx.getTxId(), i), tx.getOutputs().get(i));
+				}
+
+			} else {
+				System.out.println("Block is invalid as a new block");
+			}
+		} else {
+			System.out.println("TX is invalid");
+		}
 	}
 
 	public Blockchain getBlockchain() {

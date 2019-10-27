@@ -1,5 +1,8 @@
 package io.roger.dat159.blockchain;
 
+import io.roger.dat159.blockchain.util.EncodingUtil;
+import io.roger.dat159.blockchain.util.HashUtil;
+
 /**
  * The basic building block in the blockchain.
  */
@@ -28,8 +31,17 @@ public class Block {
 	 * "mined" so that the blockHash matches the MINING_TARGET binary pattern.
 	 */
 	public Block(String prevBlockHash, CoinbaseTx coinbaseTx, Transaction tx) {
-		// TODO
 		// Remember to calculate the Merkle root
+
+		this.prevBlockHash = prevBlockHash;
+		this.coinbaseTx = coinbaseTx;
+		this.transaction = tx;
+
+		if (this.transaction == null) {
+			merkleRoot = EncodingUtil.bytesToHex(HashUtil.sha256(coinbaseTx.getTxId()));
+		} else {
+			merkleRoot = EncodingUtil.bytesToHex(HashUtil.sha256(coinbaseTx.getTxId() + tx.getTxId()));
+		}
 	}
 
 	/**
@@ -37,7 +49,11 @@ public class Block {
 	 * requirement is satisfied.
 	 */
 	public void mine() {
-		// TODO
+		nonce = 0;
+
+		while (!getBlockHashAsBinaryString().matches(Blockchain.MINING_TARGET)) {
+			nonce++;
+		}
 	}
 
 	/**
@@ -46,7 +62,14 @@ public class Block {
 	 * puzzle requirement.
 	 */
 	public boolean isValid() {
-		// TODO
+		if (transaction == null || prevBlockHash == null || prevBlockHash.isEmpty() || merkleRoot == null) {
+			return false;
+		}
+
+		if (!getBlockHashAsBinaryString().matches(Blockchain.MINING_TARGET)) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -57,7 +80,14 @@ public class Block {
 	 * block must satisfy the hash puzzle requirement.
 	 */
 	public boolean isValidAsGenesisBlock() {
-		// TODO
+		if (transaction != null || !prevBlockHash.equals("0") || merkleRoot == null) {
+			return false;
+		}
+
+		if (!getBlockHashAsBinaryString().matches(Blockchain.MINING_TARGET)) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -66,16 +96,14 @@ public class Block {
 	 * useful in the mining process to see if the hash puzzle is solved.
 	 */
 	public String getBlockHashAsBinaryString() {
-		// TODO
-		return null;
+		return EncodingUtil.bytesToBinary(HashUtil.sha256(merkleRoot + nonce + prevBlockHash));
 	}
 
 	/**
 	 * Calculates and encodes the block hash as a hexadecimal String.
 	 */
 	public String getBlockHashAsHexString() {
-		// TODO
-		return null;
+		return EncodingUtil.bytesToHex(HashUtil.sha256(merkleRoot + nonce + prevBlockHash));
 	}
 
 	public void printOverview() {

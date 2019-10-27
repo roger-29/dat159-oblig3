@@ -1,6 +1,7 @@
 package io.roger.dat159.blockchain;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -8,7 +9,7 @@ import java.util.Set;
 /**
  * A Map of UTXOs. This is an additional datastructure to the list of blocks
  * itself. The purpose of the UtxoMap is to keep track of unspent outputs, so
- * you don't have to search the entire blockchain ev every time to find suitable
+ * you don't have to search the entire blockchain every time to find suitable
  * outputs to spend or to check whether referred outputs are valid to use or
  * not. It is organized as a Map to simplify lookup.
  */
@@ -31,8 +32,16 @@ public class UtxoMap {
 	 * K,V-pairs.
 	 */
 	public Set<Entry<Input, Output>> getUtxosForAddress(String address) {
-		// TODO
-		return null;
+		Set<Entry<Input, Output>> allEntries = getAllUtxos();
+		Set<Entry<Input, Output>> utxosForAddress = new HashSet<>();
+
+		for (Entry<Input, Output> entry : allEntries) {
+			if (entry.getValue().getAddress().equals(address)) {
+				utxosForAddress.add(entry);
+			}
+		}
+
+		return utxosForAddress;
 	}
 
 	public void addOutput(Input input, Output output) {
