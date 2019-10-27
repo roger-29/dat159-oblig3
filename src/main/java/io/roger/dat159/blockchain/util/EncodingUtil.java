@@ -23,5 +23,4 @@ public class EncodingUtil {
 	public static String bytesToBase64(byte[] bytes) {
 		return Base64.getEncoder().encodeToString(bytes);
 	}
-
 }

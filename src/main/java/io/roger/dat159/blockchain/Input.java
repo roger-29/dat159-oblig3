@@ -22,8 +22,10 @@ public class Input {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+
 		result = prime * result + prevOutputIndex;
 		result = prime * result + ((prevTxId == null) ? 0 : prevTxId.hashCode());
+
 		return result;
 	}
 
@@ -31,18 +33,26 @@ public class Input {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
+
 		if (obj == null)
 			return false;
+
 		if (getClass() != obj.getClass())
 			return false;
+
 		Input other = (Input) obj;
+
 		if (prevOutputIndex != other.prevOutputIndex)
 			return false;
+
 		if (prevTxId == null) {
-			if (other.prevTxId != null)
+			if (other.prevTxId != null) {
 				return false;
-		} else if (!prevTxId.equals(other.prevTxId))
+			}
+		} else if (!prevTxId.equals(other.prevTxId)) {
 			return false;
+		}
+
 		return true;
 	}
 }

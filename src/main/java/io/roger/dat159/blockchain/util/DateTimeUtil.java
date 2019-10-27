@@ -8,5 +8,4 @@ public class DateTimeUtil {
 	public static String getTimestamp() {
 		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 	}
-
 }

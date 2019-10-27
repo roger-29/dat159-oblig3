@@ -1,16 +1,7 @@
 package io.roger.dat159.blockchain.util;
 
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.*;
+import java.security.spec.*;
 import java.util.Base64;
 
 public class SignatureUtil {
@@ -73,5 +64,4 @@ public class SignatureUtil {
 			throw new RuntimeException(e);
 		}
 	}
-
 }

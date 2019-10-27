@@ -87,12 +87,15 @@ public class Transaction {
 	@Override
 	public String toString() {
 		String s = getTxId();
+
 		for (int i = 0; i < inputs.size(); i++) {
 			s += "\n\tinput(" + i + ")   : " + inputs.get(i);
 		}
+
 		for (int i = 0; i < outputs.size(); i++) {
 			s += "\n\toutput(" + i + ")  : " + outputs.get(i);
 		}
+
 		return s;
 	}
 }

@@ -88,6 +88,4 @@ public class Block {
 		System.out.println("   Coinbase tx     : " + coinbaseTx);
 		System.out.println("   The other tx    : " + transaction);
 	}
-
-	/* --------------------------------------------------------------------- */
 }
